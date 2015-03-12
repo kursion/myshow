@@ -1,22 +1,24 @@
 #/usr/bin/python
 
 import urllib.request
+import os, json
 import xml.etree.ElementTree as ET
-import os
 from subprocess import call, STDOUT
 
 titleFilter = "720p"
 
 FNULL = open(os.devnull, 'w') # To hide the output
 
-series = {
-    "Arrow": "http://showrss.info/feeds/505.rss",
-    "The Vampire Diaries": "http://showrss.info/feeds/205.rss"
-}
+series = {}
 
 def init():
+    global series
     f = open("hashed.dat", "a+")
     f.close()
+    os.system("deluged 2> /dev/null")
+    json_series = open("series.json")
+    series = json.load(json_series)
+    series = series["series"]
 
 def getRSS(url):
     response = urllib.request.urlopen(url)
@@ -59,7 +61,6 @@ init()
 totalOperation = 0
 for serieName in series:
     url = series[serieName]
-    # print(serieName, ":", url)
     rssXML = getRSS(url)
     # print(rss)
     links = parseXML(rssXML)
@@ -68,6 +69,7 @@ for serieName in series:
     totalOperation += len(filteredLinks)
     # print(filteredLinks)
     delugeAdd(filteredLinks)
+    print(serieName, ":", url, "| new episodes:", len(filteredLinks))
 
 if totalOperation == 0:
     print("Nothing new for the moment")
