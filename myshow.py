@@ -55,7 +55,8 @@ def filterLinks(links):
 def delugeAdd(links):
     for link in links:
         print("Adding to deluge", link["title"])
-        call(["deluge-console", "add", link["link"]], stdout=FNULL, stderr=STDOUT)
+        #call(["deluge-console", "add", link["link"]], stdout=FNULL, stderr=STDOUT)
+        call(["deluge-console", "add", link["link"]])
 
 init()
 totalOperation = 0
