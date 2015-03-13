@@ -49,7 +49,6 @@ Open `series.json` file with a text editor and add a new entry for that serie.
     "Arrow": "http://showrss.info/feeds/505.rss",
     "The Vampire Diaries": "http://showrss.info/feeds/205.rss",
     "12 Monkey": "http://showrss.info/feeds/1014.rss",
-
   }
 }
 ```
@@ -66,16 +65,14 @@ Beaware that the first time, myshow will download every episode that showRSS.inf
 present.
 
 # Run every hours
-Simply launch the **autoupdate.sh** script so myshow
-will be executed very hours.
+Simply launch the script with the option `--auto`. By defaut the interval is set to
+one hour. But you can specify yours using the `-i INTERVAL` option.
 
-`./autoupdate.sh`
 
 # Things to do
-- Configuration file
-- Parameters
-- Add, remove command for series
-- Init (to ignore downloading everything)
+- OK: Parameters
+- OK: (command --new) Add, remove command for series
+- OK: (command --init) Init (to ignore downloading everything)
 - Configuration date for each series
 - First S00E00 to download
 
