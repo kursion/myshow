@@ -50,7 +50,7 @@ class MyShow:
         parser.add_argument('-d', '--deluged', help='Start deluged', action='store_true')
         parser.add_argument('-dw', '--deluge-web', help='Start deluge-web (default port: 8112)', action='store_true')
         parser.add_argument('-n', '--new', help='Add a new serie')
-        parser.add_argument('-i', '--interval', help='Interval of updates in hour (default: 1)', default=1)
+        parser.add_argument('-i', '--interval', help='Interval of updates in hour (default: 1)', default="1")
         parser.add_argument('-v', '--version', help='Show version number of MyShow', action="store_true")
         parser.add_argument('--verbosity', help='Verbose mode', action="store_true")
         return parser.parse_args()
@@ -64,14 +64,15 @@ class MyShow:
         elif int(ARGS.interval) < 1:
             print("[X]\tMinimum interval time should be 1")
             sys.exit(1)
+
         if ARGS.version: print("Version: ", MyShow.VERSION)
-        if ARGS.deluged or ARGS.auto: self.startDeluged() # Start deluged
+        if ARGS.new: self.addNewSerie()
+        if ARGS.deluged or ARGS.auto or ARGS.update: self.startDeluged() # Start deluged
         if ARGS.deluge_web: self.startDelugeWeb() # Start deluge-web
         if ARGS.auto:
             if ARGS.init: self.updateSeries(initOnly=ARGS.init)
             self.updateSeriesAuto()
         elif ARGS.update or ARGS.init: self.updateSeries(initOnly=ARGS.init)
-        if ARGS.new: print("TODO ADD a serie")
 
     def _terminate(self, msg, code=0):
         if msg is not None: print("[X]\t"+msg, "Terminating... [CODE="+str(code)+"]")
@@ -146,9 +147,14 @@ class MyShow:
             self._terminate("An error occured while trying to start "+processName, code)
 
     def _getRSS(self, url):
-        response = urllib.request.urlopen(url)
-        data = response.read()
-        return data.decode('utf-8')
+        rss = None
+        try:
+            response = urllib.request.urlopen(url)
+            data = response.read()
+            rss = data.decode('utf-8')
+        except:
+            print("[X]\tURL not found", url)
+        return rss
 
     def _parseXML(self, xml):
         root = ET.fromstring(xml)[0]
@@ -156,8 +162,10 @@ class MyShow:
         for child in root.iter('item'):
             title = child.find("title").text
             link = child.find("link").text
+            link = child.find("link").text
             hash = child.find("{http://showrss.info/}info_hash").text
-            mlinks.append({"mlink": link, "hash": hash, "title": title})
+            serieName = child.find("{http://showrss.info/}showname").text
+            mlinks.append({"mlink": link, "hash": hash, "title": title, "name": serieName})
         return mlinks
 
     def _filterLinks(self, mlinks):
@@ -224,7 +232,8 @@ class MyShow:
         if self.ARGS.verbosity:
             nbrSeries = len(MyShow.SERIES)
             if nbrSeries > 0:
-                print("[OK]\tfound", nbrSeries, "series", MyShow.SERIES.keys())
+                print("[OK]\tfound", nbrSeries, "series")
+                for k in MyShow.SERIES: print(">", k)
             else:
                 self._terminate("No series found in "+self.FILENAMES["series"]+".")
 
@@ -247,6 +256,9 @@ class MyShow:
         for serieName in series:
             url = series[serieName]
             rssXML = self._getRSS(url)
+            if rssXML is None:
+                print("[X]\tIgnoring", serieName)
+                continue
             mlinks = self._parseXML(rssXML)
             filteredLinks = self._filterLinks(mlinks)
 
@@ -264,7 +276,6 @@ to check periodically for new series to download
 
     def updateSeriesAuto(self):
         waitTime = int(self.ARGS.interval)*3600
-        waitTime = 30
         print("[OK]\tUpdating every:", waitTime/3600, "hours")
         while 1:
             try:
@@ -274,6 +285,36 @@ to check periodically for new series to download
             except KeyboardInterrupt:
                 self._terminate("\n\nByebye.")
 
+    def serieUrlExists(self, series, url):
+        for k in series:
+            if url == series[k]: return True
+        return False
+
+    def addNewSerie(self):
+        series = self.getSeries()
+        url = self.ARGS.new
+        if "http" not in url:
+            print("This is not a valid url, it should start with 'http'")
+            sys.exit(1)
+
+        if self.serieUrlExists(series, url):
+            print("This url already exists", url)
+            sys.exit(1)
+        print(url)
+        rssXML = self._getRSS(url)
+        if rssXML is None:
+            print("[X]\tNo RSS found")
+            sys.exit(0)
+        links = self._parseXML(rssXML)
+
+        serieName = links[0]["name"]
+        series[serieName] = url
+
+        print(series)
+        json_file = open(MyShow.FILENAMES["series"], "w")
+        jsonString = json.dumps({"series": series}, indent=4)
+        json_file.write(jsonString)
+        json_file.close()
 
 if __name__ == '__main__':
     ms = MyShow()
