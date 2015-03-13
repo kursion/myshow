@@ -172,12 +172,11 @@ class MyShow:
                 ep = mlink["title"]+":"+mlink["hash"]+"\n"
                 if not ep in episodes:
                     if self.ARGS.verbosity:
-                        print("New episode:", mlink["title"])
+                        print("[OK]\tNew episode:", mlink["title"])
                     f.write(ep)
                     filteredLinks.append(mlink)
         f.close()
         return filteredLinks
-
 
     def startDeluged(self):
         'Starting deluged process'
@@ -225,8 +224,7 @@ class MyShow:
         if self.ARGS.verbosity:
             nbrSeries = len(MyShow.SERIES)
             if nbrSeries > 0:
-                print("[OK]\tfound", nbrSeries, "series")
-                print(MyShow.SERIES)
+                print("[OK]\tfound", nbrSeries, "series", MyShow.SERIES.keys())
             else:
                 self._terminate("No series found in "+self.FILENAMES["series"]+".")
 
@@ -258,9 +256,11 @@ class MyShow:
                 self._delugeAdd(filteredLinks)
                 if self.ARGS.verbosity: print(serieName, "downloading", nbrLinks, "new episodes !")
         if nbrNewEpisodes == 0 and self.ARGS.verbosity and not initOnly: print("Not a single new episode to watch :(")
-        if self.ARGS.verbosity and initOnly: print("MyShow was initialized. Run it with the '--update' option \
-to download latest series from today or with the '--auto' option \
-to check periodically for new series to download")
+        if self.ARGS.verbosity and initOnly: print("""~~~ Warning ~~~
+MyShow was initialized. Run it with the '--update' option
+to download latest series from today or with the '--auto' option
+to check periodically for new series to download
+~~~~~~~~~~~~~~~""")
 
     def updateSeriesAuto(self):
         waitTime = int(self.ARGS.interval)*3600
