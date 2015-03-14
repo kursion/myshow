@@ -87,17 +87,17 @@ class MyShow:
         ppython2 = shutil.which("python2")
         if ppython2 is None:
             self._terminate(self.ERRORS["python2"], 2)
-        if call(["python2", "-c", "'import "+module+"'"], stdout=MyShow.FNULL, stderr=STDOUT) == 0: return True
+        if call("python2 -c 'import "+module+"'", shell=True, stdout=MyShow.FNULL, stderr=STDOUT) == 0: return True
         else: return False
 
     def _checkPythonDependencies(self):
         'This is very ugly and boring to do... thanks python2 and deluge'
         if self.ARGS.verbosity:
-            print("Checking python dependencies")
+            print("[?]\tChecking python dependencies")
 
+        psudo = shutil.which("sudo")
+        ppip2 = shutil.which("pip2")
         if self.ARGS.deluge_web:
-            psudo = shutil.which("sudo")
-            ppip2 = shutil.which("pip2")
             if not self._checkPython2Module('mako'):
                 if not ppip2:
                     self._terminate(MyShow.ERRORS["python2-mako"], 2)
@@ -110,7 +110,7 @@ class MyShow:
                         code = call(pip2cmd, stdout=MyShow.FNULL, stderr=STDOUT)
                     if code != 0:
                         self._terminate("Couldn't install python2-make for deluge-web.", 2)
-        if self.ARGS.deluged or self.ARGS.deluge_web:
+        if self.ARGS.deluged or self.ARGS.deluge_web or self.ARGS.auto:
             if not self._checkPython2Module("service_identity"):
                 if self.ARGS.verbosity: print("Installing python2-service_identity for web deluge")
                 pip2cmd = ["pip2", "install", "service_identity"]
@@ -277,6 +277,7 @@ to check periodically for new series to download
     def updateSeriesAuto(self):
         waitTime = int(self.ARGS.interval)*3600
         print("[OK]\tUpdating every:", waitTime/3600, "hours")
+        self.updateSeries(False)
         while 1:
             try:
                 time.sleep(waitTime)
