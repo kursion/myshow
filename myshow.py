@@ -40,7 +40,7 @@ class MyShow:
 
     def _initHashed(self):
         f = open(MyShow.FILENAMES["hashed"], "a+").close()
-        if self.ARGS.verbosity: print("[OK]\tChecking", MyShow.FILENAMES["hashed"])
+        if self.ARGS.verbose: print("[OK]\tChecking", MyShow.FILENAMES["hashed"])
 
     def _parseArgs(self):
         parser = argparse.ArgumentParser(description='Automatically download your rss torrents')
@@ -51,8 +51,8 @@ class MyShow:
         parser.add_argument('-dw', '--deluge-web', help='Start deluge-web (default port: 8112)', action='store_true')
         parser.add_argument('-n', '--new', help='Add a new serie')
         parser.add_argument('-i', '--interval', help='Interval of updates in hour (default: 1)', default="1")
-        parser.add_argument('-v', '--version', help='Show version number of MyShow', action="store_true")
-        parser.add_argument('--verbosity', help='Verbose mode', action="store_true")
+        parser.add_argument('--version', help='Show version number of MyShow', action="store_true")
+        parser.add_argument('-v', '--verbose', help='Verbose mode', action="store_true")
         return parser.parse_args()
 
     def _processArgs(self):
@@ -92,7 +92,7 @@ class MyShow:
 
     def _checkPythonDependencies(self):
         'This is very ugly and boring to do... thanks python2 and deluge'
-        if self.ARGS.verbosity:
+        if self.ARGS.verbose:
             print("[?]\tChecking python dependencies")
 
         psudo = shutil.which("sudo")
@@ -102,7 +102,7 @@ class MyShow:
                 if not ppip2:
                     self._terminate(MyShow.ERRORS["python2-mako"], 2)
                 else:
-                    if self.ARGS.verbosity: print("Installing python2-mako for web interface")
+                    if self.ARGS.verbose: print("Installing python2-mako for web interface")
                     pip2cmd = ["pip2", "install", "mako"]
                     code = call(pip2cmd, stdout=MyShow.FNULL, stderr=STDOUT)
                     if code != 0 and psudo != None:
@@ -112,7 +112,7 @@ class MyShow:
                         self._terminate("Couldn't install python2-make for deluge-web.", 2)
         if self.ARGS.deluged or self.ARGS.deluge_web or self.ARGS.auto:
             if not self._checkPython2Module("service_identity"):
-                if self.ARGS.verbosity: print("Installing python2-service_identity for web deluge")
+                if self.ARGS.verbose: print("Installing python2-service_identity for web deluge")
                 pip2cmd = ["pip2", "install", "service_identity"]
                 code = call(pip2cmd, stdout=MyShow.FNULL, stderr=STDOUT)
                 if code != 0 and psudo != None:
@@ -134,7 +134,7 @@ class MyShow:
             else:
                 raise Exception("Couldn't find process name", processName)
         if kill and pkill: call(["pkill", processName])
-        if self.ARGS.verbosity:
+        if self.ARGS.verbose:
             print("[?]\tStarting", processName, "("+bin+")")
             if detached:
                 return Popen([processName])
@@ -179,7 +179,7 @@ class MyShow:
             if titleFilter in mlink["title"]:
                 ep = mlink["title"]+":"+mlink["hash"]+"\n"
                 if not ep in episodes:
-                    if self.ARGS.verbosity:
+                    if self.ARGS.verbose:
                         print("[OK]\tNew episode:", mlink["title"])
                     f.write(ep)
                     filteredLinks.append(mlink)
@@ -189,12 +189,12 @@ class MyShow:
     def startDeluged(self):
         'Starting deluged process'
         self._startProcess(MyShow.BIN["deluged"])
-        if self.ARGS.verbosity: print("[OK]\tDeluged started")
+        if self.ARGS.verbose: print("[OK]\tDeluged started")
 
     def _delugeAdd(self, mlinks):
         for link in mlinks:
             print("Adding to deluge", link["title"])
-            if self.ARGS.verbosity:
+            if self.ARGS.verbose:
                 code = call(["deluge-console", "add", link["mlink"]], stdout=MyShow.FNULL, stderr=STDOUT)
             else:
                 code = call(["deluge-console", "add", link["mlink"]])
@@ -211,12 +211,12 @@ class MyShow:
                 os.kill(process.pid, 0)
                 running = True
             except:
-                if self.ARGS.verbosity: print("[?]\tWaiting for deluge-web to start...")
+                if self.ARGS.verbose: print("[?]\tWaiting for deluge-web to start...")
                 time.sleep(4)
-        if self.ARGS.verbosity: print("[OK]\tDeluge-web started in detached mode. Default port is generally: 8112")
+        if self.ARGS.verbose: print("[OK]\tDeluge-web started in detached mode. Default port is generally: 8112")
 
     def getSeries(self):
-        if self.ARGS.verbosity: print("[?]\tGetting series")
+        if self.ARGS.verbose: print("[?]\tGetting series")
         try:
             json_series = open(MyShow.FILENAMES["series"])
         except:
@@ -229,7 +229,7 @@ class MyShow:
             self._terminate(MyShow.ERRORS["series_not_found"])
         self.checkSeriesFormat(series["series"])
         MyShow.SERIES = series["series"] # TODO: this is maybe not needed :/
-        if self.ARGS.verbosity:
+        if self.ARGS.verbose:
             nbrSeries = len(MyShow.SERIES)
             if nbrSeries > 0:
                 print("[OK]\tfound", nbrSeries, "series")
@@ -248,7 +248,7 @@ class MyShow:
 
     def updateSeries(self, initOnly=True):
         '''Update series. If initOnly is set to true, MyShow won't dowload any series'''
-        if self.ARGS.verbosity:
+        if self.ARGS.verbose:
             if initOnly: print("Initializing MyShow...")
             else: print("Updating MyShow to the latests series")
         series = self.getSeries()
@@ -266,9 +266,9 @@ class MyShow:
             nbrNewEpisodes += nbrLinks
             if not initOnly and nbrLinks>0:
                 self._delugeAdd(filteredLinks)
-                if self.ARGS.verbosity: print(serieName, "downloading", nbrLinks, "new episodes !")
-        if nbrNewEpisodes == 0 and self.ARGS.verbosity and not initOnly: print("Not a single new episode to watch :(")
-        if self.ARGS.verbosity and initOnly: print("""~~~ Warning ~~~
+                if self.ARGS.verbose: print(serieName, "downloading", nbrLinks, "new episodes !")
+        if nbrNewEpisodes == 0 and self.ARGS.verbose and not initOnly: print("Not a single new episode to watch :(")
+        if self.ARGS.verbose and initOnly: print("""~~~ Warning ~~~
 MyShow was initialized. Run it with the '--update' option
 to download latest series from today or with the '--auto' option
 to check periodically for new series to download
