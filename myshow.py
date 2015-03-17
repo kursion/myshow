@@ -45,8 +45,8 @@ class MyShow:
     def _parseArgs(self):
         parser = argparse.ArgumentParser(description='Automatically download your rss torrents')
         parser.add_argument('--init', help='Init myshow with \'series.json\' (without downloading on first run)', action='store_true')
-        parser.add_argument('-u', '--update', help='Check and download new series once', action='store_true')
-        parser.add_argument('-a', '--auto', help='Automatically update based on hourly interval', action='store_true')
+        parser.add_argument('-u', '--update', help='Check and download new series once (deluged automatically launched)', action='store_true')
+        parser.add_argument('-a', '--auto', help='Automatically update based on hourly interval (deluged automatically launched)', action='store_true')
         parser.add_argument('-d', '--deluged', help='Start deluged', action='store_true')
         parser.add_argument('-dw', '--deluge-web', help='Start deluge-web (default port: 8112)', action='store_true')
         parser.add_argument('-n', '--new', help='Add a new serie')

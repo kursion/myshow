@@ -50,8 +50,10 @@ optional arguments:
   -h, --help            show this help message and exit
   --init                Init myshow with 'series.json' (without downloading on
                         first run)
-  -u, --update          Check and download new series once
-  -a, --auto            Automatically update based on hourly interval
+  -u, --update          Check and download new series once (deluged
+                        automatically launched)
+  -a, --auto            Automatically update based on hourly interval (deluged
+                        automatically launched)
   -d, --deluged         Start deluged
   -dw, --deluge-web     Start deluge-web (default port: 8112)
   -n NEW, --new NEW     Add a new serie
@@ -112,30 +114,68 @@ to check periodically for new series to download
 ~~~~~~~~~~~~~~~
 ```
 
-Now MyShow knows to track: 12 Monkeys, Arrow and Vampire Diaries episodes.
+Now MyShow will track: 12 Monkeys, Arrow and Vampire Diaries episodes.
 Since we specified the `--init` option, myshow will prevent downloading the latest episode
 directly. Thus when running myshow with the update option (see section: **Run myshow**)
 
-HERE
 
 # Run myshow
 Just run this command
-`> python3 myshow.py -u -v`
+
+`> python myshow.py -u -v`
+
+in order to check for new series and start downloading new episodes in deluge.
 
 *The downloaded file should be in "Deluge download folder".
 You can check this by opening deluge and look at the configuration options. Normally,
-it should be downloaded into your `home/username/Downloads` folder.*
+it should be downloaded into your `home/username/Downloads` folderi by default.*
 
-# Run every hours
+# Run periodically
 Simply launch the script with the option `--auto`. By defaut the interval is set to
-one hour. But you can specify yours using the `-i INTERVAL` option.
+one hour. But you can specify yours using the `-i INTERVAL` option. Example for two hours
+interval:
 
+`> python3 myshow.py -a -v -i 2`
+
+Every 2 hours, myshow will get the list of the RSS flux and check for new episodes. If
+it detectes an undownloaded episode, it will add the torrent to *deluged*.
+
+# Deluge web interface
+You can also tell myshow to run the deluge-web interface by passing the option `-dw` or `--deluge-web`.
+Example:
+
+`> python3 myshow.py -a -v -i 2 -dw`
+
+The default port is *8112*, and the default password is *deluge*
+
+# Decrease resources notes
+For low settings, you should modify deluge to consume less resources. The first time I saw
+"Deluge is a lightweight client for torrent", I told myself: "Perfect for my project !". But
+I found out that deluged and deluged-web needed more thant 500Mb of RAM memory in order to
+work. Well, this isn't true. Here is a simple guide to low down deluge resources:
+
+- Launche the web interface (`python3 myshow.py -dw`) and connect on "127.0.0.1:8112" with your favorite browser. It can
+take up to 1-2 minutes in order to launch deluge-web.
+- Go to "Preferences" (at the top) and choose the "Bandwidth" category.
+- Low down the following options to decrease deluged resources: Max Connections, Max Upload slots,
+Max Half-Open Connections, Maximum Connection Attempts per Second in the **Global Bandwitch Usage** section.
+
+# Deluge-web example for Raspberry PI
+Here is an example of configuration for RaspberryPI:
+```
+Global Bandwith Usage
+Maximum Connections: 60
+Maximum Upload Slots: 2
+Maximum Download Speed (KiB/s): 2000     [this depends on your bandwitdh]
+Maximum Upload Speed (KiB/s): 10         [this depends on your bandwidth]
+Maximum Half-Open Connection: 30
+Maximum Connection Attempts per Second: 5
+Uncheck "Ignore limits on local network"
+Check "Rate limit IP overhead"
+```
 
 # Things to do
-- OK: Parameters
-- OK: (command --new) Add, remove command for series
-- OK: (command --init) Init (to ignore downloading everything)
-- Configuration date for each series
-- First S00E00 to download
+- Parsers folder to have multiple source (not only showrss.info)
+- Installer for /usr/bin
 
 
