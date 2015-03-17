@@ -110,7 +110,6 @@ MyShow was initialized. Run it with the '--update' option
 to download latest series from today or with the '--auto' option
 to check periodically for new series to download
 ~~~~~~~~~~~~~~~
-
 ```
 
 Now MyShow knows to track: 12 Monkeys, Arrow and Vampire Diaries episodes.
