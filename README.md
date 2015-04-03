@@ -81,23 +81,23 @@ avoid downloading all episodes.
 
 You should have something like this
 ```
-\> python3 myshow.py -n http://showrss.info/feeds/1014.rss -u --init -v
+python3 myshow.py -n http://showrss.info/feeds/1014.rss -u --init -v
 [?] Checking python dependencies
 [OK]  Checking hashed.dat
 [?] Getting series
 [OK]  found 3 series
-\> Arrow
-\> The Vampire Diaries
-\> Game of Thrones
+ Arrow
+ The Vampire Diaries
+ Game of Thrones
 http://showrss.info/feeds/1014.rss
 {'Arrow': 'http://showrss.info/feeds/505.rss', 'The Vampire Diaries': 'http://showrss.info/feeds/205.rss', '12 Monkeys': 'http://showrss.info/feeds/1014.rss', 'Game of Thrones': 'http://showrss.info/feeds/350.rss'}
 Initializing MyShow...
 [?] Getting series
 [OK]  found 4 series
-\> Arrow
-\> The Vampire Diaries
-\> 12 Monkeys
-\> Game of Thrones
+ Arrow
+ The Vampire Diaries
+ 12 Monkeys
+ Game of Thrones
 [OK]  New episode: 12 Monkeys 1x09 Tomorrow 720p
 [OK]  New episode: 12 Monkeys 1x08 Yesterday 720p
 [OK]  New episode: 12 Monkeys 1x07 The Keys 720p
