@@ -81,8 +81,8 @@ avoid downloading all episodes.
 
 You should have something like this:
 
-```
-  > python3 myshow.py -n http://showrss.info/feeds/1014.rss -u --init -v
+
+> python3 myshow.py -n http://showrss.info/feeds/1014.rss -u --init -v
 [?] Checking python dependencies
 [OK]  Checking hashed.dat
 [?] Getting series
@@ -107,12 +107,9 @@ Initializing MyShow...
 [OK]  New episode: 12 Monkeys 1x04 Atari 720p
 [OK]  New episode: 12 Monkeys 1x03 Cassandra Complex 720p
 [OK]  New episode: 12 Monkeys 1x02 720p
-~~~ Warning ~~~
-MyShow was initialized. Run it with the '--update' option
-to download latest series from today or with the '--auto' option
-to check periodically for new series to download
-~~~~~~~~~~~~~~~
-```
+
+
+
 
 Now MyShow will track: 12 Monkeys, Arrow and Vampire Diaries episodes.
 Since we specified the `--init` option, myshow will prevent downloading the latest episode
