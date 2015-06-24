@@ -156,13 +156,16 @@ class MyShow:
             print("[X]\tURL not found", url)
         return rss
 
+    def _decodeASCII(self, buf):
+        return buf 
+        return str(buf.decode("ascii", "ignore"))
+
     def _parseXML(self, xml):
         root = ET.fromstring(xml)[0]
         mlinks = [] # magnet links
         for child in root.iter('item'):
-            title = child.find("title").text
-            link = child.find("link").text
-            link = child.find("link").text
+            title = child.find("title").text.encode("ascii", "ignore").decode("ascii")
+            link = child.find("link").text 
             hash = child.find("{http://showrss.info/}info_hash").text
             serieName = child.find("{http://showrss.info/}showname").text
             mlinks.append({"mlink": link, "hash": hash, "title": title, "name": serieName})
@@ -176,7 +179,7 @@ class MyShow:
 
         f = open(MyShow.FILENAMES["hashed"], "a")
         for mlink in mlinks:
-            if titleFilter in mlink["title"]:
+            if not mlink["title"] in filteredLinks:
                 ep = mlink["title"]+":"+mlink["hash"]+"\n"
                 if not ep in episodes:
                     if self.ARGS.verbose:
