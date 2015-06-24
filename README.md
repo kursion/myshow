@@ -1,6 +1,6 @@
 # myshow
-A little script that will automatically download torrent serie's episodes
-based on a rss flux.
+A little script that will automatically download serie's episodes
+based on http://showRSS.info rss list using P2P (torrent).
 
 *NOTE: for the moment only showrss.info is supported.*
 
@@ -75,7 +75,7 @@ Then add the serie to myshow with initialization:
 `python3 myshow.py -a http://showrss.info/feeds/1014.rss --init -v`
 
 - `-n`: will append the new feed to be tracked by myshow.
-- `--init`: will catch the latest feed. This step is to down in order to
+- `--init`: will catch the latest feed. This step should be done in order to
 avoid downloading all episodes.
 - `-v`: will launch myshow in verbose mode.
 
