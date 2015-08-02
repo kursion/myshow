@@ -72,7 +72,7 @@ optional arguments:
  *http://showrss.info/feeds/1014.rss*)
 
 Then add the serie to myshow with initialization:
-`python3 myshow.py -a http://showrss.info/feeds/1014.rss --init -v`
+`python3 myshow.py -n http://showrss.info/feeds/1014.rss --init -v`
 
 - `-n`: will append the new feed to be tracked by myshow.
 - `--init`: will catch the latest feed. This step should be done in order to
